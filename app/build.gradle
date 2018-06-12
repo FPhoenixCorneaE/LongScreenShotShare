@@ -1,0 +1,54 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+
+    defaultConfig {
+        applicationId "com.wkz.longscreenshotshare"
+        minSdkVersion 16
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+
+        //新的 gradle 插件不再支持 annotation processors，如果需要使用需要显式声明
+        javaCompileOptions {
+            // 显式声明支持注解
+            annotationProcessorOptions {
+                includeCompileClasspath false
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    repositories {
+        flatDir {
+            dirs 'aar'
+        }
+    }
+}
+
+final SUPPORT_VERSION = '27.1.1'
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.aar'], dir: 'aar')
+    implementation "com.android.support:appcompat-v7:$SUPPORT_VERSION"
+    implementation "com.android.support:support-annotations:$SUPPORT_VERSION"
+    /**
+     * GlideImageView
+     */
+    implementation "com.android.support:support-v4:$SUPPORT_VERSION"
+    implementation 'com.github.bumptech.glide:glide:4.0.0-RC0'
+    implementation 'com.github.bumptech.glide:compiler:4.0.0-RC0'
+    implementation 'com.github.bumptech.glide:okhttp3-integration:4.0.0-RC0'
+    /**
+     * RecyclerView
+     */
+    implementation "com.android.support:recyclerview-v7:$SUPPORT_VERSION"
+}

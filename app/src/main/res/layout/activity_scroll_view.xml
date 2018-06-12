@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#50000000">
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/nsv_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/ll_child"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v4.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="100dp" />
+
+            <RelativeLayout
+                android:id="@+id/rl_game_info"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
+                android:background="@drawable/shape_background_bgmain_cornersfive">
+
+                <com.sunfusheng.glideimageview.GlideImageView
+                    android:id="@+id/iv_game_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="185dp"
+                    android:scaleType="centerCrop"
+                    android:src="@mipmap/pic_image"
+                    app:siv_pressed_alpha="0"
+                    app:siv_radius_top_left="5dp"
+                    app:siv_radius_top_right="5dp"
+                    app:siv_shape_type="rectangle" />
+
+                <com.sunfusheng.glideimageview.GlideImageView
+                    android:id="@+id/iv_game_icon"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_below="@+id/iv_game_image"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="-25dp"
+                    android:background="@mipmap/ic_game_icon"
+                    android:scaleType="centerCrop"
+                    app:siv_pressed_alpha="0"
+                    app:siv_pressed_color="@android:color/transparent"
+                    app:siv_radius="5dp"
+                    app:siv_shape_type="rectangle"
+                    tools:ignore="RtlHardcoded" />
+
+                <TextView
+                    android:id="@+id/tv_game_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/iv_game_icon"
+                    android:layout_marginLeft="15dp"
+                    android:layout_toRightOf="@id/iv_game_icon"
+                    android:ellipsize="end"
+                    android:gravity="fill_horizontal"
+                    android:maxLines="1"
+                    android:text="三生三世十里桃花"
+                    android:textColor="#ff000000"
+                    android:textSize="14sp"
+                    tools:ignore="HardcodedText,RtlHardcoded" />
+
+                <TextView
+                    android:id="@+id/tv_game_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/iv_game_icon"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:gravity="fill_horizontal"
+                    android:lineSpacingMultiplier="1.2"
+                    android:text="《苍之纪元》是一款以异世界冒险为题材的休闲游戏。这款游戏以
+说！"
+                    android:textColor="#ff505050"
+                    android:textSize="13sp"
+                    tools:ignore="HardcodedText" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_game_description">
+
+                    <ImageView
+                        android:id="@+id/iv_qr_code"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:layout_margin="15dp"
+                        android:background="@drawable/shape_background_bgwhite_cornerstwo"
+                        android:padding="2dp"
+                        android:scaleType="fitXY"
+                        tools:ignore="ContentDescription" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toRightOf="@+id/iv_qr_code"
+                        android:orientation="vertical"
+                        tools:ignore="RtlHardcoded">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="长按识别二维码"
+                            android:textColor="#ff505050"
+                            android:textSize="12sp"
+                            tools:ignore="HardcodedText" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="下载游戏"
+                            android:textColor="#ff505050"
+                            android:textSize="12sp"
+                            tools:ignore="HardcodedText" />
+                    </LinearLayout>
+                </RelativeLayout>
+            </RelativeLayout>
+
+            <android.support.v4.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="50dp" />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</FrameLayout>

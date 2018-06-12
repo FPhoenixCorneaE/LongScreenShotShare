@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_item"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="15dp"
+    android:layout_marginLeft="25dp"
+    android:layout_marginRight="15dp"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:ignore="RtlHardcoded">
+
+    <com.sunfusheng.glideimageview.GlideImageView
+        android:id="@+id/iv_share_icon"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:siv_pressed_alpha="0"
+        app:siv_pressed_color="@android:color/transparent"
+        app:siv_shape_type="circle" />
+
+    <TextView
+        android:id="@+id/tv_share_platform_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="微信朋友圈"
+        android:textColor="#ff000000"
+        android:textSize="9sp"
+        tools:ignore="HardcodedText,SmallSp" />
+</LinearLayout>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context="com.wkz.longscreenshotshare.MainActivity">
+
+    <Button
+        android:id="@+id/mScrollView"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="ScrollView"
+        android:textAllCaps="false"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/mListView"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="ListView"
+        android:textAllCaps="false"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/mRecyclerView"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="RecyclerView"
+        android:textAllCaps="false"
+        tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/mWebView"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="WebView"
+        android:textAllCaps="false"
+        tools:ignore="HardcodedText" />
+</LinearLayout>
