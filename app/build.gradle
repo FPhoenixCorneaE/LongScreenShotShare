@@ -19,11 +19,116 @@ android {
         }
     }
 
+    /**
+     * 签名设置
+     */
+    signingConfigs {
+        release {
+            File propFile = file('../app/keystore.properties')
+            if (propFile.exists()) {
+                Properties props = new Properties()
+                props.load(new FileInputStream(propFile))
+                if (props.containsKey('STORE_FILE') &&
+                        props.containsKey('STORE_PASSWORD') &&
+                        props.containsKey('KEY_ALIAS') &&
+                        props.containsKey('KEY_PASSWORD')) {
+                    storeFile file(props['STORE_FILE'])
+                    storePassword props['STORE_PASSWORD']
+                    keyAlias props['KEY_ALIAS']
+                    keyPassword props['KEY_PASSWORD']
+                }
+            }
+        }
+
+        debug {
+            File propFile = file('../app/keystore.properties')
+            if (propFile.exists()) {
+                Properties props = new Properties()
+                props.load(new FileInputStream(propFile))
+                if (props.containsKey('STORE_FILE') &&
+                        props.containsKey('STORE_PASSWORD') &&
+                        props.containsKey('KEY_ALIAS') &&
+                        props.containsKey('KEY_PASSWORD')) {
+                    storeFile file(props['STORE_FILE'])
+                    storePassword props['STORE_PASSWORD']
+                    keyAlias props['KEY_ALIAS']
+                    keyPassword props['KEY_PASSWORD']
+                }
+            }
+        }
+    }
+
+    /**
+     * 构建配置
+     */
     buildTypes {
         release {
-            minifyEnabled false
+            //执行proguard混淆
+            minifyEnabled true
+            //Zipalign优化
+            zipAlignEnabled true
+            //移除无用的resource文件
+            shrinkResources true
+            //混淆文件
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            //签名
+            signingConfig signingConfigs.release
+
+            //apk重命名
+            android.applicationVariants.all { variant ->
+                variant.outputs.all {
+
+                    outputFileName = "${project.name}_${defaultConfig.versionName}_${variant.buildType.name}.apk"
+
+                }
+            }
         }
+
+        debug {
+            //不执行proguard
+            minifyEnabled false
+            //Zipalign优化
+            zipAlignEnabled false
+            // 移除无用的resource文件
+            shrinkResources false
+            //签名
+            signingConfig signingConfigs.debug
+
+            //apk重命名
+            android.applicationVariants.all { variant ->
+                variant.outputs.all {
+
+                    outputFileName = "${project.name}_${defaultConfig.versionName}_${variant.buildType.name}.apk"
+
+                }
+            }
+        }
+    }
+
+    //这个是解决lint报错的代码
+    lintOptions {
+        quiet true
+        abortOnError false
+        ignoreWarnings true
+        checkReleaseBuilds false//方法过时警告的开关
+        disable 'InvalidPackage' //Some libraries have issues with this.
+        disable 'OldTargetApi' //Lint gives this warning but SDK 20 would be Android L Beta.
+        disable 'IconDensities' //For testing purpose. This is safe to remove.
+        disable 'IconMissingDensityFolder' //For testing purpose. This is safe to remove.
+    }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/dependencies.txt'
+        exclude 'META-INF/LGPL2.1'
     }
 
     repositories {
