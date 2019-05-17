@@ -9,7 +9,7 @@
         android:id="@+id/fl_close"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="36dp">
 
         <ImageView
@@ -40,10 +40,9 @@
             tools:ignore="HardcodedText" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/mRecyclerView"
+            android:id="@+id/rv_share_platform"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_height="match_parent"
             android:scrollbars="none" />
     </RelativeLayout>
 </FrameLayout>

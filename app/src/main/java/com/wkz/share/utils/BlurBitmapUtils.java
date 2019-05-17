@@ -1,4 +1,4 @@
-package com.wkz.longscreenshotshare.utils;
+package com.wkz.share.utils;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -10,22 +10,13 @@ import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
 
 /**
- * Created by yukuoyuan on 2017/9/29.
+ * 高斯模糊图片工具类
+ *
+ * @author Administrator
+ * @date 2018/5/21
  */
 public class BlurBitmapUtils {
-    private static BlurBitmapUtils sInstance;
-    private BlurBitmapUtils() {
-    }
-    public static BlurBitmapUtils instance() {
-        if (sInstance == null) {
-            synchronized (BlurBitmapUtils.class) {
-                if (sInstance == null) {
-                    sInstance = new BlurBitmapUtils();
-                }
-            }
-        }
-        return sInstance;
-    }
+
     /**
      * @param context   上下文对象
      * @param image     需要模糊的图片
@@ -34,7 +25,7 @@ public class BlurBitmapUtils {
      * @return 模糊处理后的Bitmap
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
-    public Bitmap blurBitmap(Context context, Bitmap image, float blurRadius, int outWidth, int outHeight) {
+    public static Bitmap blurBitmap(Context context, Bitmap image, float blurRadius, int outWidth, int outHeight) {
         // 将缩小后的图片做为预渲染的图片
         Bitmap inputBitmap = Bitmap.createScaledBitmap(image, outWidth, outHeight, false);
         // 创建一张渲染后的输出图片

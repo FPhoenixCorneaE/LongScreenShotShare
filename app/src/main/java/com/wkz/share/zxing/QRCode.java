@@ -1,4 +1,4 @@
-package com.wkz.longscreenshotshare.zxing;
+package com.wkz.share.zxing;
 
 /**
  * *          _       _
@@ -92,7 +92,7 @@ public class QRCode {
             BitMatrix bitMatrix = new QRCodeWriter().encode(text,
                     BarcodeFormat.QR_CODE, size, size, hints);
 
-            //将logo图片按martix设置的信息缩放
+            //将logo图片按matrix设置的信息缩放
             mBitmap = Bitmap.createScaledBitmap(mBitmap, size, size, false);
 
             int[] pixels = new int[size * size];
@@ -137,7 +137,7 @@ public class QRCode {
             BitMatrix bitMatrix = new QRCodeWriter().encode(text,
                     BarcodeFormat.QR_CODE, size, size, hints);
 
-            //将logo图片按martix设置的信息缩放
+            //将logo图片按matrix设置的信息缩放
             mBitmap = Bitmap.createScaledBitmap(mBitmap, size, size, false);
 
             int[] pixels = new int[size * size];
@@ -181,7 +181,7 @@ public class QRCode {
             BitMatrix bitMatrix = new QRCodeWriter().encode(text,
                     BarcodeFormat.QR_CODE, size, size, hints);
 
-            //将logo图片按martix设置的信息缩放
+            //将logo图片按matrix设置的信息缩放
             mBitmap = Bitmap.createScaledBitmap(mBitmap, size, size, false);
 
             int[] pixels = new int[size * size];
@@ -231,11 +231,13 @@ public class QRCode {
             BitMatrix bitMatrix = new QRCodeWriter().encode(text,
                     BarcodeFormat.QR_CODE, size, size, hints);
 
-            //将logo图片按martix设置的信息缩放
+            //将logo图片按matrix设置的信息缩放
             mBitmap = Bitmap.createScaledBitmap(mBitmap, size, size, false);
 
-            int width = bitMatrix.getWidth();//矩阵高度
-            int height = bitMatrix.getHeight();//矩阵宽度
+            //矩阵高度
+            int width = bitMatrix.getWidth();
+            //矩阵宽度
+            int height = bitMatrix.getHeight();
             int halfW = width / 2;
             int halfH = height / 2;
 
@@ -281,9 +283,9 @@ public class QRCode {
     /**
      * 修改三个顶角颜色的，带logo的二维码
      *
-     * @param text
-     * @param size
-     * @param mBitmap
+     * @param text 需要生成二维码的文字、网址等
+     * @param size 生成二维码的大小
+     * @param mBitmap 二维码中心图片
      * @return
      */
     public static Bitmap createQRCodeWithLogo6(String text, int size, Bitmap mBitmap, @ColorInt int vertexColor) {
@@ -301,11 +303,13 @@ public class QRCode {
             BitMatrix bitMatrix = new QRCodeWriter().encode(text,
                     BarcodeFormat.QR_CODE, size, size, hints);
 
-            //将logo图片按martix设置的信息缩放
+            //将logo图片按matrix设置的信息缩放
             mBitmap = Bitmap.createScaledBitmap(mBitmap, size, size, false);
 
-            int width = bitMatrix.getWidth();//矩阵高度
-            int height = bitMatrix.getHeight();//矩阵宽度
+            //矩阵高度
+            int width = bitMatrix.getWidth();
+            //矩阵宽度
+            int height = bitMatrix.getHeight();
             int halfW = width / 2;
             int halfH = height / 2;
 

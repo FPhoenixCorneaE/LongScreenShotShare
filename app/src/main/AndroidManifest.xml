@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.wkz.longscreenshotshare">
+    package="com.wkz.share">
 
     <application
         android:allowBackup="true"
@@ -9,17 +9,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name="com.wkz.share.ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ScrollViewActivity" />
-        <activity android:name=".ListViewActivity" />
-        <activity android:name=".WebViewActivity" />
-        <activity android:name=".RecyclerViewActivity" />
+        <activity android:name="com.wkz.share.ui.ScrollViewActivity" />
+        <activity android:name="com.wkz.share.ui.ListViewActivity" />
+        <activity android:name="com.wkz.share.ui.WebViewActivity" />
+        <activity android:name="com.wkz.share.ui.RecyclerViewActivity" />
     </application>
 
 </manifest>

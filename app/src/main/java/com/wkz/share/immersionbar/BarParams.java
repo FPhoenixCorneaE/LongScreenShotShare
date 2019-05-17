@@ -1,4 +1,4 @@
-package com.wkz.longscreenshotshare.immersionbar;
+package com.wkz.share.immersionbar;
 
 import android.graphics.Color;
 import android.support.annotation.ColorInt;
@@ -8,9 +8,6 @@ import android.view.View;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by geyifeng on 2017/5/9.
- */
 public class BarParams {
     @ColorInt
     public int statusBarColor = Color.TRANSPARENT;

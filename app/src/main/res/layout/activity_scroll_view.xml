@@ -28,7 +28,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
-                android:background="@drawable/shape_background_bgmain_cornersfive">
+                android:background="@drawable/shape_bg_0xffededed_cornersfive">
 
                 <com.sunfusheng.glideimageview.GlideImageView
                     android:id="@+id/iv_game_image"
@@ -81,8 +81,7 @@
                     android:layout_marginRight="15dp"
                     android:gravity="fill_horizontal"
                     android:lineSpacingMultiplier="1.2"
-                    android:text="《苍之纪元》是一款以异世界冒险为题材的休闲游戏。这款游戏以
-说！"
+                    android:text="@string/game_description"
                     android:textColor="#ff505050"
                     android:textSize="13sp"
                     tools:ignore="HardcodedText" />
@@ -98,7 +97,7 @@
                         android:layout_height="60dp"
                         android:layout_gravity="center"
                         android:layout_margin="15dp"
-                        android:background="@drawable/shape_background_bgwhite_cornerstwo"
+                        android:background="@drawable/shape_bg_0xffffffff_cornerstwo"
                         android:padding="2dp"
                         android:scaleType="fitXY"
                         tools:ignore="ContentDescription" />
@@ -132,7 +131,7 @@
 
             <android.support.v4.widget.Space
                 android:layout_width="match_parent"
-                android:layout_height="50dp" />
+                android:layout_height="150dp" />
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </FrameLayout>

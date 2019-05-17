@@ -1,18 +1,20 @@
-package com.wkz.longscreenshotshare.utils;
+package com.wkz.share.utils;
 
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * 视图工具类
- * Created by Administrator on 2018/3/28.
+ * 视图工具类,设置某个view的padding/margin
+ *
+ * @author Administrator
+ * @date 2018/3/28
  */
 
 public class ViewUtils {
 
     /**
-     * 设置某个View的margin
+     * 设置某个View的padding
      *
      * @param view   需要设置的view
      * @param isDp   需要设置的数值是否为DP

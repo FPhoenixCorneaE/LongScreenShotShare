@@ -1,4 +1,4 @@
-package com.wkz.longscreenshotshare.immersionbar;
+package com.wkz.share.immersionbar;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -24,7 +24,6 @@ import java.util.Set;
 
 /**
  * android 4.4以上bar 管理
- * Created by gyf on 2017/05/09.
  */
 @TargetApi(Build.VERSION_CODES.KITKAT)
 public class ImmersionBar {

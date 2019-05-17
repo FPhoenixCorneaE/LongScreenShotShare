@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:context="com.wkz.longscreenshotshare.MainActivity">
+    tools:context="com.wkz.share.ui.MainActivity">
 
     <Button
         android:id="@+id/mScrollView"

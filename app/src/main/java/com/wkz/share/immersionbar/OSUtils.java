@@ -1,12 +1,8 @@
-package com.wkz.longscreenshotshare.immersionbar;
+package com.wkz.share.immersionbar;
 
 import android.text.TextUtils;
 
 import java.lang.reflect.Method;
-
-/**
- * Created by geyifeng on 2017/4/18.
- */
 
 public class OSUtils {
 

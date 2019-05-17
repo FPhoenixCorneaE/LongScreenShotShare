@@ -1,4 +1,4 @@
-package com.wkz.longscreenshotshare.immersionbar;
+package com.wkz.share.immersionbar;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -12,10 +12,6 @@ import android.util.TypedValue;
 import android.view.ViewConfiguration;
 
 import java.lang.reflect.Method;
-
-/**
- * Created by geyifeng on 2017/5/11.
- */
 
 class BarConfig {
 

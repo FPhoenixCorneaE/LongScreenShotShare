@@ -1,4 +1,4 @@
-package com.wkz.longscreenshotshare.utils;
+package com.wkz.share.utils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,9 @@ import java.util.Locale;
 
 /**
  * 长截图工具类
- * Created by Administrator on 2018/5/21.
+ *
+ * @author Administrator
+ * @date 2018/5/21
  */
 
 public class ScreenShotUtils {
@@ -80,7 +83,9 @@ public class ScreenShotUtils {
      */
     @SuppressLint("ObsoleteSdkInt")
     public static Bitmap shotView(View v) {
-        if (v == null) return null;
+        if (v == null) {
+            return null;
+        }
         v.setDrawingCacheEnabled(true);
         v.buildDrawingCache();
         if (Build.VERSION.SDK_INT >= 11) {
@@ -106,7 +111,9 @@ public class ScreenShotUtils {
 
     @SuppressLint("ObsoleteSdkInt")
     public static Bitmap shotViewWithoutBottom(View v) {
-        if (v == null) return null;
+        if (v == null) {
+            return null;
+        }
         v.setDrawingCacheEnabled(true);
         v.buildDrawingCache();
         if (Build.VERSION.SDK_INT >= 11) {
@@ -135,13 +142,14 @@ public class ScreenShotUtils {
      * http://blog.csdn.net/lyy1104/article/details/40048329
      **/
     public static Bitmap shotNestedScrollView(NestedScrollView nestedScrollView) {
-        if (nestedScrollView == null) return null;
+        if (nestedScrollView == null) {
+            return null;
+        }
         int h = 0;
         Bitmap bitmap;
         // 获取ScrollView实际高度
         for (int i = 0; i < nestedScrollView.getChildCount(); i++) {
             h += nestedScrollView.getChildAt(i).getHeight();
-//            nestedScrollView.getChildAt(i).setBackgroundColor(Color.parseColor("#50000000"));
         }
         // 创建对应大小的bitmap
         bitmap = Bitmap.createBitmap(nestedScrollView.getWidth(), h, Bitmap.Config.ARGB_8888);
@@ -179,7 +187,7 @@ public class ScreenShotUtils {
         int th = sv.getChildAt(0).getHeight();
 
         /* the total height is more than one screen */
-        Bitmap temp = null;
+        Bitmap temp;
         if (th > vh) {
             int w = getScreenWidth(activity);
             int absVh = vh - sv.getPaddingTop() - sv.getPaddingBottom();
@@ -198,7 +206,7 @@ public class ScreenShotUtils {
             } while (vh < th);
         }
 
-        // restore somthing
+        // restore something
         sv.scrollTo(0, 0);
         sv.setVerticalScrollBarEnabled(true);
         sv.setVerticalFadingEdgeEnabled(true);
@@ -226,7 +234,7 @@ public class ScreenShotUtils {
         // draw fg into
         cv.drawBitmap(foreground, foreX, foreY, null);
         // save all clip
-        cv.save(Canvas.ALL_SAVE_FLAG);// 保存
+        cv.save();
         // store
         cv.restore();// 存储
 
@@ -373,7 +381,9 @@ public class ScreenShotUtils {
      */
     private static void savePicture(final Context context, Bitmap bitmap) {
 
-        if (bitmap == null) return;
+        if (bitmap == null) {
+            return;
+        }
 
         final File mFile;
         String path = Environment.getExternalStorageDirectory() + File.separator + FILE_DIR;
@@ -383,7 +393,7 @@ public class ScreenShotUtils {
         }
 
         //当前时间通过MD5命名图片
-        String fileName = getMD5(System.currentTimeMillis() + "").toUpperCase(Locale.getDefault()) + ".jpg";
+        String fileName = getMD5(System.currentTimeMillis() + "").toUpperCase(Locale.getDefault());
         mFile = new File(dir, fileName);
         FileOutputStream out = null;
         try {
@@ -411,11 +421,16 @@ public class ScreenShotUtils {
 //        File newFile = CompressHelper.getDefault(context.getApplicationContext()).compressToFile(mFile);
 
         File newFile = new CompressHelper.Builder(context.getApplicationContext())
-                .setMaxWidth(10000)  // 默认最大宽度为720
-                .setMaxHeight(50000) // 默认最大高度为960
-                .setQuality(80)    // 默认压缩质量为80
-                .setFileName(fileName) // 设置你需要修改的文件名
-                .setCompressFormat(Bitmap.CompressFormat.JPEG) // 设置默认压缩为jpg格式
+                // 默认最大宽度为720
+                .setMaxWidth(10000)
+                // 默认最大高度为960
+                .setMaxHeight(50000)
+                // 默认压缩质量为80
+                .setQuality(80)
+                // 设置你需要修改的文件名
+                .setFileName(fileName)
+                // 设置默认压缩为jpg格式
+                .setCompressFormat(Bitmap.CompressFormat.JPEG)
 //                .setDestinationDirectoryPath(Environment.getExternalStoragePublicDirectory(
 //                        Environment.DIRECTORY_PICTURES).getAbsolutePath())
                 .setDestinationDirectoryPath(dir.getAbsolutePath())
@@ -437,7 +452,11 @@ public class ScreenShotUtils {
     private static String getMD5(String info) {
         try {
             MessageDigest md5 = MessageDigest.getInstance("MD5");
-            md5.update(info.getBytes("UTF-8"));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                md5.update(info.getBytes(StandardCharsets.UTF_8));
+            } else {
+                md5.update(info.getBytes("UTF-8"));
+            }
             byte[] encryption = md5.digest();
 
             StringBuilder strBuilder = new StringBuilder();
