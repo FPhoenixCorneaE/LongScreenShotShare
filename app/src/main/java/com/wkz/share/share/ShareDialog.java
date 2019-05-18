@@ -3,6 +3,7 @@ package com.wkz.share.share;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -110,6 +111,15 @@ public class ShareDialog extends Dialog {
                 dismiss();
                 if (mOnShareListener != null) {
                     mOnShareListener.onClickCloseBtn(ShareDialog.this);
+                }
+            }
+        });
+
+        setOnDismissListener(new OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (mOnShareListener != null) {
+                    mOnShareListener.onDismiss((ShareDialog) dialog);
                 }
             }
         });

@@ -318,7 +318,7 @@ public class QRCode {
             float sy = (float) 2 * IMAGE_HALFWIDTH / mBitmap.getHeight();
             m.setScale(sx, sy);
             //设置缩放信息
-            //将logo图片按martix设置的信息缩放
+            //将logo图片按matrix设置的信息缩放
             mBitmap = Bitmap.createBitmap(mBitmap, 0, 0,
                     mBitmap.getWidth(), mBitmap.getHeight(), m, false);
 

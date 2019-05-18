@@ -23,6 +23,13 @@ public interface OnShareListener {
     void onTouchOutSide(ShareDialog shareDialog);
 
     /**
+     * 解散弹窗
+     *
+     * @param shareDialog 分享弹窗
+     */
+    void onDismiss(ShareDialog shareDialog);
+
+    /**
      * 点击分享平台
      *
      * @param shareDialog   分享弹窗

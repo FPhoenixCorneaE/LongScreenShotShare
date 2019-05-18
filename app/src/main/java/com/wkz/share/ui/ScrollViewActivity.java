@@ -13,7 +13,6 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.NestedScrollView;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -42,14 +41,9 @@ import com.wkz.share.zxing.QRCode;
  * @author Administrator
  * @date 2018/5/16
  */
-public class ScrollViewActivity extends AppCompatActivity implements View.OnClickListener, View.OnLongClickListener {
-
-    private static final float ZOOM_BEFORE = 1.0F;
-    private static final float ZOOM_AFTER = 1.05F;
-    private static final long DURATION = 200L;
+public class ScrollViewActivity extends MainActivity implements View.OnClickListener, View.OnLongClickListener {
 
 
-    private ShareDialog mShareDialog;
     private GlideImageView mGameImageIv;
     private GlideImageView mGameIconIv;
     private TextView mGameNameTv;
@@ -73,6 +67,10 @@ public class ScrollViewActivity extends AppCompatActivity implements View.OnClic
      * 下载游戏地址
      */
     private String mDownloadUrl = "http://files.rastargame.com/andriodapk/RSClient.apk";
+    /**
+     * 分享弹窗
+     */
+    private ShareDialog mShareDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,6 +101,11 @@ public class ScrollViewActivity extends AppCompatActivity implements View.OnClic
                     @Override
                     public void onTouchOutSide(ShareDialog shareDialog) {
                         zoomIn();
+                    }
+
+                    @Override
+                    public void onDismiss(ShareDialog shareDialog) {
+
                     }
 
                     @Override

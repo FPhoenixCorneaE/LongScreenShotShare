@@ -10,6 +10,10 @@ import com.wkz.share.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    protected static final float ZOOM_BEFORE = 1.0F;
+    protected static final float ZOOM_AFTER = 1.05F;
+    protected static final long DURATION = 200L;
+
     private Button mMScrollView;
     private Button mMListView;
     private Button mMRecyclerView;

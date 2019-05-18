@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -17,6 +19,7 @@ import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.LruCache;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ListAdapter;
@@ -89,10 +92,10 @@ public class ScreenShotUtils {
         v.setDrawingCacheEnabled(true);
         v.buildDrawingCache();
         if (Build.VERSION.SDK_INT >= 11) {
-            v.measure(View.MeasureSpec.makeMeasureSpec(v.getWidth(),
-                    View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(
-                    v.getHeight(), View.MeasureSpec.EXACTLY));
-            v.layout((int) v.getX(), (int) v.getY(),
+            v.measure(View.MeasureSpec.makeMeasureSpec(v.getWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(v.getHeight(), View.MeasureSpec.EXACTLY));
+            v.layout((int) v.getX(),
+                    (int) v.getY(),
                     (int) v.getX() + v.getMeasuredWidth(),
                     (int) v.getY() + v.getMeasuredHeight());
         } else {
@@ -117,9 +120,8 @@ public class ScreenShotUtils {
         v.setDrawingCacheEnabled(true);
         v.buildDrawingCache();
         if (Build.VERSION.SDK_INT >= 11) {
-            v.measure(View.MeasureSpec.makeMeasureSpec(v.getWidth(),
-                    View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(
-                    v.getHeight(), View.MeasureSpec.EXACTLY));
+            v.measure(View.MeasureSpec.makeMeasureSpec(v.getWidth(), View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(v.getHeight(), View.MeasureSpec.EXACTLY));
             v.layout((int) v.getX(), (int) v.getY(),
                     (int) v.getX() + v.getMeasuredWidth(),
                     (int) v.getY() + v.getMeasuredHeight());
@@ -189,7 +191,7 @@ public class ScreenShotUtils {
         /* the total height is more than one screen */
         Bitmap temp;
         if (th > vh) {
-            int w = getScreenWidth(activity);
+            int w = ScreenUtils.getScreenWidth(activity);
             int absVh = vh - sv.getPaddingTop() - sv.getPaddingBottom();
             do {
                 int restHeight = th - vh;
@@ -219,15 +221,14 @@ public class ScreenShotUtils {
         return b;
     }
 
-    private static Bitmap mergeBitmap(int newImageH, int newIamgeW,
-                                      Bitmap background, float backX, float backY, Bitmap foreground,
+    private static Bitmap mergeBitmap(int newImageH, int newImageW, Bitmap background,
+                                      float backX, float backY, Bitmap foreground,
                                       float foreX, float foreY) {
         if (null == background || null == foreground) {
             return null;
         }
         // create the new blank bitmap 创建一个新的和SRC长度宽度一样的位图
-        Bitmap newBitmap = Bitmap.createBitmap(newIamgeW, newImageH,
-                Bitmap.Config.RGB_565);
+        Bitmap newBitmap = Bitmap.createBitmap(newImageW, newImageH, Bitmap.Config.RGB_565);
         Canvas cv = new Canvas(newBitmap);
         // draw bg into
         cv.drawBitmap(background, backX, backY, null);
@@ -239,12 +240,6 @@ public class ScreenShotUtils {
         cv.restore();// 存储
 
         return newBitmap;
-    }
-
-    private static int getScreenWidth(Activity activity) {
-        DisplayMetrics metric = new DisplayMetrics();
-        activity.getWindow().getWindowManager().getDefaultDisplay().getMetrics(metric);
-        return metric.widthPixels;
     }
 
     /**
@@ -298,35 +293,45 @@ public class ScreenShotUtils {
      * 截图RecyclerView
      * https://gist.github.com/PrashamTrivedi/809d2541776c8c141d9a
      */
-    public static Bitmap shotRecyclerView(RecyclerView recyclerView) {
+    public static Bitmap shotRecyclerView(RecyclerView recyclerView, float scaleX, float scaleY) {
         RecyclerView.Adapter adapter = recyclerView.getAdapter();
         Bitmap bigBitmap = null;
         if (adapter != null) {
             int size = adapter.getItemCount();
             int height = 0;
             Paint paint = new Paint();
-            int iHeight = 0;
             final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 
             // Use 1/8th of the available memory for this memory cache.
             final int cacheSize = maxMemory / 8;
-            LruCache<String, Bitmap> bitmaCache = new LruCache<>(cacheSize);
+            LruCache<String, Bitmap> bitmapCache = new LruCache<>(cacheSize);
+            SparseIntArray bitmapLeft = new SparseIntArray(size);
+            SparseIntArray bitmapTop = new SparseIntArray(size);
             for (int i = 0; i < size; i++) {
                 RecyclerView.ViewHolder holder = adapter.createViewHolder(recyclerView, adapter.getItemViewType(i));
                 adapter.onBindViewHolder(holder, i);
+                RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
                 holder.itemView.measure(
-                        View.MeasureSpec.makeMeasureSpec(recyclerView.getWidth(), View.MeasureSpec.EXACTLY),
-                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-                holder.itemView.layout(0, 0, holder.itemView.getMeasuredWidth(),
-                        holder.itemView.getMeasuredHeight());
+                        View.MeasureSpec.makeMeasureSpec(recyclerView.getWidth() - layoutParams.leftMargin - layoutParams.rightMargin, View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                );
+                holder.itemView.layout(
+                        layoutParams.leftMargin,
+                        layoutParams.topMargin,
+                        (int) (holder.itemView.getMeasuredWidth() / scaleX),
+                        (int) (holder.itemView.getMeasuredHeight() / scaleY)
+                );
                 holder.itemView.setDrawingCacheEnabled(true);
                 holder.itemView.buildDrawingCache();
                 Bitmap drawingCache = holder.itemView.getDrawingCache();
                 if (drawingCache != null) {
-
-                    bitmaCache.put(String.valueOf(i), drawingCache);
+                    bitmapCache.put(String.valueOf(i), drawingCache);
                 }
-                height += holder.itemView.getMeasuredHeight();
+
+                height += layoutParams.topMargin;
+                bitmapLeft.put(i, layoutParams.leftMargin);
+                bitmapTop.put(i, height);
+                height += (int) (holder.itemView.getMeasuredHeight() / scaleY) + layoutParams.bottomMargin;
             }
 
             bigBitmap = Bitmap.createBitmap(recyclerView.getMeasuredWidth(), height, Bitmap.Config.ARGB_8888);
@@ -336,14 +341,18 @@ public class ScreenShotUtils {
                 ColorDrawable lColorDrawable = (ColorDrawable) lBackground;
                 int lColor = lColorDrawable.getColor();
                 bigCanvas.drawColor(lColor);
+            } else if (lBackground instanceof BitmapDrawable) {
+                BitmapDrawable lBitmapDrawable = (BitmapDrawable) lBackground;
+                Bitmap lBitmap = lBitmapDrawable.getBitmap();
+                bigCanvas.drawBitmap(lBitmap, new Rect(0, 0, lBitmap.getWidth(), lBitmap.getHeight()),
+                        new RectF(0, 0, recyclerView.getWidth(), recyclerView.getHeight()), paint);
             }
 
-            for (int i = 0; i < size; i++) {
-                Bitmap bitmap = bitmaCache.get(String.valueOf(i));
-                bigCanvas.drawBitmap(bitmap, 0f, iHeight, paint);
-                iHeight += bitmap.getHeight();
-                bitmap.recycle();
-            }
+//            for (int i = 0; i < size; i++) {
+//                Bitmap bitmap = bitmapCache.get(String.valueOf(i));
+//                bigCanvas.drawBitmap(bitmap, bitmapLeft.get(i), bitmapTop.get(i), paint);
+//                bitmap.recycle();
+//            }
         }
 
         // 保存图片
@@ -369,9 +378,27 @@ public class ScreenShotUtils {
         int iHeight = bitmap.getHeight();
         bigCanvas.drawBitmap(bitmap, 0, iHeight, paint);
         webView.draw(bigCanvas);
+
+        // 保存图片
+        savePicture(webView.getContext(), bitmap);
         return bitmap;
     }
 
+    /**
+     * 截图View
+     *
+     * @param view
+     * @return
+     */
+    public static Bitmap getBitmapByView(View view) {
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+
+        // 保存图片
+        savePicture(view.getContext(), bitmap);
+        return bitmap;
+    }
 
     /**
      * 保存图片
