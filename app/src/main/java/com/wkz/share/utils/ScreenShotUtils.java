@@ -15,6 +15,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -293,7 +295,7 @@ public class ScreenShotUtils {
      * 截图RecyclerView
      * https://gist.github.com/PrashamTrivedi/809d2541776c8c141d9a
      */
-    public static Bitmap shotRecyclerView(RecyclerView recyclerView, float scaleX, float scaleY) {
+    public static Bitmap shotRecyclerView(RecyclerView recyclerView) {
         RecyclerView.Adapter adapter = recyclerView.getAdapter();
         Bitmap bigBitmap = null;
         if (adapter != null) {
@@ -318,8 +320,8 @@ public class ScreenShotUtils {
                 holder.itemView.layout(
                         layoutParams.leftMargin,
                         layoutParams.topMargin,
-                        (int) (holder.itemView.getMeasuredWidth() / scaleX),
-                        (int) (holder.itemView.getMeasuredHeight() / scaleY)
+                        holder.itemView.getMeasuredWidth() + layoutParams.leftMargin,
+                        holder.itemView.getMeasuredHeight() + layoutParams.topMargin
                 );
                 holder.itemView.setDrawingCacheEnabled(true);
                 holder.itemView.buildDrawingCache();
@@ -331,7 +333,7 @@ public class ScreenShotUtils {
                 height += layoutParams.topMargin;
                 bitmapLeft.put(i, layoutParams.leftMargin);
                 bitmapTop.put(i, height);
-                height += (int) (holder.itemView.getMeasuredHeight() / scaleY) + layoutParams.bottomMargin;
+                height += holder.itemView.getMeasuredHeight() + layoutParams.bottomMargin;
             }
 
             bigBitmap = Bitmap.createBitmap(recyclerView.getMeasuredWidth(), height, Bitmap.Config.ARGB_8888);
@@ -348,11 +350,11 @@ public class ScreenShotUtils {
                         new RectF(0, 0, recyclerView.getWidth(), recyclerView.getHeight()), paint);
             }
 
-//            for (int i = 0; i < size; i++) {
-//                Bitmap bitmap = bitmapCache.get(String.valueOf(i));
-//                bigCanvas.drawBitmap(bitmap, bitmapLeft.get(i), bitmapTop.get(i), paint);
-//                bitmap.recycle();
-//            }
+            for (int i = 0; i < size; i++) {
+                Bitmap bitmap = bitmapCache.get(String.valueOf(i));
+                bigCanvas.drawBitmap(bitmap, bitmapLeft.get(i), bitmapTop.get(i), paint);
+                bitmap.recycle();
+            }
         }
 
         // 保存图片

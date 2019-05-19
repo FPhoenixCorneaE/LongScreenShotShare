@@ -18,10 +18,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.sunfusheng.glideimageview.GlideImageView;
 import com.wkz.share.R;
 import com.wkz.share.immersionbar.BarHide;
 import com.wkz.share.immersionbar.ImmersionBar;
@@ -32,6 +34,8 @@ import com.wkz.share.utils.AnimationUtils;
 import com.wkz.share.utils.ScreenShotUtils;
 import com.wkz.share.utils.ViewUtils;
 import com.wkz.share.zxing.QRCode;
+
+import java.util.Locale;
 
 /**
  * 循环视图的长截图分享界面
@@ -63,6 +67,7 @@ public class RecyclerViewActivity extends MainActivity {
      */
     private ShareDialog mShareDialog;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,8 +78,45 @@ public class RecyclerViewActivity extends MainActivity {
 
         initView();
 
-        initRecyclerView();
+        initListener();
 
+        initData();
+
+        initRecyclerView();
+    }
+
+    private void initView() {
+        mRvRecycler = (RecyclerView) findViewById(R.id.rvRecycler);
+    }
+
+    private void initListener() {
+        mRvRecycler.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
+            private GestureDetectorCompat mGestureDetectorCompat = new GestureDetectorCompat(mRvRecycler.getContext(), new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    //item点击
+                    if (!mShareDialog.isShowing()) {
+                        mShareDialog.show();
+                    }
+                    zoomOut();
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+
+                }
+            });
+
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                mGestureDetectorCompat.onTouchEvent(e);
+                return false;
+            }
+        });
+    }
+
+    private void initData() {
         //隐藏状态栏
         ImmersionBar.with(this)
                 .fitsSystemWindows(false)
@@ -104,38 +146,10 @@ public class RecyclerViewActivity extends MainActivity {
                     @Override
                     public void onClickSharePlatform(ShareDialog shareDialog, SharePlatformAdapter.ViewHolder holder, int sharePlatform) {
                         //长截图
-                        Bitmap bitmap = ScreenShotUtils.shotRecyclerView(mRvRecycler, ZOOM_AFTER, ZOOM_AFTER);
+                        Bitmap bitmap = ScreenShotUtils.shotRecyclerView(mRvRecycler);
                     }
                 });
         mShareDialog.show();
-    }
-
-    private void initView() {
-        mRvRecycler = (RecyclerView) findViewById(R.id.rvRecycler);
-        mRvRecycler.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener() {
-            private GestureDetectorCompat mGestureDetectorCompat = new GestureDetectorCompat(mRvRecycler.getContext(), new GestureDetector.SimpleOnGestureListener() {
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-                    //item点击
-                    if (!mShareDialog.isShowing()) {
-                        mShareDialog.show();
-                    }
-                    zoomOut();
-                    return true;
-                }
-
-                @Override
-                public void onLongPress(MotionEvent e) {
-
-                }
-            });
-
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                mGestureDetectorCompat.onTouchEvent(e);
-                return false;
-            }
-        });
     }
 
     private void initRecyclerView() {
@@ -158,17 +172,29 @@ public class RecyclerViewActivity extends MainActivity {
             public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
                 if (position == 0) {
                     ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_game_info), true, 25, 100, 25, 0);
+                    Glide.with(mContext)
+                            .asBitmap()
+                            .load(R.mipmap.pic_image)
+                            .into(new SimpleTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                                    ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).setImageBitmap(resource);
+                                }
+                            });
+                    ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_icon)).loadImage(mCenterImageUrl, R.mipmap.ic_game_icon);
+                    ((TextView) holder.itemView.findViewById(R.id.tv_game_name)).setText(String.format(Locale.getDefault(), "三生三世十里桃花%d", position));
                 } else if (position == getItemCount() - 1) {
                     ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_qr_code), true, 25, 0, 25, 150);
 
                     //二维码中心图片
                     Glide.with(mContext)
                             .asBitmap()
-                            .load(R.mipmap.ic_game_icon)
+                            .load(mCenterImageUrl)
                             .into(new SimpleTarget<Bitmap>() {
                                 @Override
                                 public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                                    ((ImageView) holder.itemView.findViewById(R.id.iv_qr_code)).setImageBitmap(QRCode.createQRCodeWithLogo6(mDownloadUrl, 500, resource, mVertexColor));
+                                    ((ImageView) holder.itemView.findViewById(R.id.iv_qr_code))
+                                            .setImageBitmap(QRCode.createQRCodeWithLogo6(mDownloadUrl, 500, resource, mVertexColor));
                                 }
                             });
 
@@ -185,6 +211,29 @@ public class RecyclerViewActivity extends MainActivity {
                     });
                 } else {
                     ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_game_info), true, 25, 15, 25, 0);
+                    if (position >= 10 && position < 10 + mDatas.size()) {
+                        Glide.with(mContext)
+                                .asBitmap()
+                                .load(mDatas.get(position - 10))
+                                .into(new SimpleTarget<Bitmap>() {
+                                    @Override
+                                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                                        ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).setImageBitmap(resource);
+                                    }
+                                });
+                    } else {
+                        Glide.with(mContext)
+                                .asBitmap()
+                                .load(R.mipmap.pic_image)
+                                .into(new SimpleTarget<Bitmap>() {
+                                    @Override
+                                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
+                                        ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).setImageBitmap(resource);
+                                    }
+                                });
+                    }
+                    ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_icon)).loadImage(mCenterImageUrl, R.mipmap.ic_game_icon);
+                    ((TextView) holder.itemView.findViewById(R.id.tv_game_name)).setText(String.format(Locale.getDefault(), "三生三世十里桃花%d", position));
                 }
             }
 
