@@ -1,30 +1,20 @@
 package com.wkz.share.ui;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
-import com.sunfusheng.glideimageview.GlideImageView;
 import com.wkz.share.R;
+import com.wkz.share.adapter.RecyclerViewAdapter;
 import com.wkz.share.immersionbar.BarHide;
 import com.wkz.share.immersionbar.ImmersionBar;
 import com.wkz.share.share.OnShareListener;
@@ -32,10 +22,17 @@ import com.wkz.share.share.ShareDialog;
 import com.wkz.share.share.SharePlatformAdapter;
 import com.wkz.share.utils.AnimationUtils;
 import com.wkz.share.utils.ScreenShotUtils;
-import com.wkz.share.utils.ViewUtils;
-import com.wkz.share.zxing.QRCode;
 
-import java.util.Locale;
+import java.io.File;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * 循环视图的长截图分享界面
@@ -66,6 +63,8 @@ public class RecyclerViewActivity extends MainActivity {
      * 分享弹窗
      */
     private ShareDialog mShareDialog;
+
+    private Disposable mDisposable;
 
 
     @Override
@@ -145,8 +144,31 @@ public class RecyclerViewActivity extends MainActivity {
 
                     @Override
                     public void onClickSharePlatform(ShareDialog shareDialog, SharePlatformAdapter.ViewHolder holder, int sharePlatform) {
-                        //长截图
-                        Bitmap bitmap = ScreenShotUtils.shotRecyclerView(mRvRecycler);
+                        // 长截图
+                        mDisposable = Observable.defer(
+                                new Callable<ObservableSource<Bitmap>>() {
+                                    @Override
+                                    public ObservableSource<Bitmap> call() throws Exception {
+                                        return new ObservableSource<Bitmap>() {
+                                            @Override
+                                            public void subscribe(Observer<? super Bitmap> observer) {
+                                                // 开始截图
+                                                observer.onNext(ScreenShotUtils.shotRecyclerView(mRvRecycler));
+                                            }
+                                        };
+                                    }
+                                })
+                                .subscribeOn(Schedulers.computation())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(new Consumer<Bitmap>() {
+                                    @Override
+                                    public void accept(Bitmap bitmap) throws Exception {
+                                        // 保存图片
+                                        File file = ScreenShotUtils.savePicture(mContext, bitmap);
+
+                                        Toast.makeText(mContext, "图片已保存至 " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     }
                 });
         mShareDialog.show();
@@ -155,101 +177,7 @@ public class RecyclerViewActivity extends MainActivity {
     private void initRecyclerView() {
         mRvRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRvRecycler.setHasFixedSize(true);
-        mRvRecycler.setAdapter(new RecyclerView.Adapter() {
-            @NonNull
-            @Override
-            public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                if (viewType == 1) {
-                    return new RecyclerView.ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_recycler2, parent, false)) {
-                    };
-                } else {
-                    return new RecyclerView.ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.recycler_item_recycler1, parent, false)) {
-                    };
-                }
-            }
-
-            @Override
-            public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, int position) {
-                if (position == 0) {
-                    ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_game_info), true, 25, 100, 25, 0);
-                    Glide.with(mContext)
-                            .asBitmap()
-                            .load(R.mipmap.pic_image)
-                            .into(new SimpleTarget<Bitmap>() {
-                                @Override
-                                public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                                    ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).setImageBitmap(resource);
-                                }
-                            });
-                    ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_icon)).loadImage(mCenterImageUrl, R.mipmap.ic_game_icon);
-                    ((TextView) holder.itemView.findViewById(R.id.tv_game_name)).setText(String.format(Locale.getDefault(), "三生三世十里桃花%d", position));
-                } else if (position == getItemCount() - 1) {
-                    ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_qr_code), true, 25, 0, 25, 150);
-
-                    //二维码中心图片
-                    Glide.with(mContext)
-                            .asBitmap()
-                            .load(mCenterImageUrl)
-                            .into(new SimpleTarget<Bitmap>() {
-                                @Override
-                                public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                                    ((ImageView) holder.itemView.findViewById(R.id.iv_qr_code))
-                                            .setImageBitmap(QRCode.createQRCodeWithLogo6(mDownloadUrl, 500, resource, mVertexColor));
-                                }
-                            });
-
-                    holder.itemView.findViewById(R.id.iv_qr_code).setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(View v) {
-                            //打开浏览器下载游戏
-                            Intent intent = new Intent();
-                            intent.setAction(Intent.ACTION_VIEW);
-                            intent.setData(Uri.parse(mDownloadUrl));
-                            mContext.startActivity(intent);
-                            return false;
-                        }
-                    });
-                } else {
-                    ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_game_info), true, 25, 15, 25, 0);
-                    if (position >= 10 && position < 10 + mDatas.size()) {
-                        Glide.with(mContext)
-                                .asBitmap()
-                                .load(mDatas.get(position - 10))
-                                .into(new SimpleTarget<Bitmap>() {
-                                    @Override
-                                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                                        ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).setImageBitmap(resource);
-                                    }
-                                });
-                    } else {
-                        Glide.with(mContext)
-                                .asBitmap()
-                                .load(R.mipmap.pic_image)
-                                .into(new SimpleTarget<Bitmap>() {
-                                    @Override
-                                    public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                                        ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).setImageBitmap(resource);
-                                    }
-                                });
-                    }
-                    ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_icon)).loadImage(mCenterImageUrl, R.mipmap.ic_game_icon);
-                    ((TextView) holder.itemView.findViewById(R.id.tv_game_name)).setText(String.format(Locale.getDefault(), "三生三世十里桃花%d", position));
-                }
-            }
-
-            @Override
-            public int getItemCount() {
-                return 20;
-            }
-
-            @Override
-            public int getItemViewType(int position) {
-                if (position == getItemCount() - 1) {
-                    return 1;
-                }
-                return super.getItemViewType(position);
-            }
-        });
+        mRvRecycler.setAdapter(new RecyclerViewAdapter(mContext, mDatas, mCenterImageUrl, mDownloadUrl, mVertexColor));
     }
 
     /**
@@ -264,5 +192,13 @@ public class RecyclerViewActivity extends MainActivity {
      */
     private void zoomOut() {
         AnimationUtils.zoomOut(mRvRecycler, ZOOM_AFTER, ZOOM_AFTER, ZOOM_BEFORE, ZOOM_BEFORE, DURATION);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mDisposable != null && !mDisposable.isDisposed()) {
+            mDisposable.dispose();
+        }
     }
 }

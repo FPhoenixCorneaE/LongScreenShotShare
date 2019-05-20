@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             "http://d.hiphotos.baidu.com/lvpics/w=1000/sign=e2347e78217f9e2f703519082f00eb24/730e0cf3d7ca7bcb49f90bb1b8096b63f724a8aa.jpg",
             "http://f.hiphotos.baidu.com/lvpics/w=600/sign=b7c305c7aad3fd1f3609a13a004f25ce/dcc451da81cb39db83b5f1bfd2160924aa1830e5.jpg",
             "http://b-ssl.duitang.com/uploads/item/201412/01/20141201233907_YmPCw.jpeg",
-            "http://pic.58pic.com/58pic/15/25/21/87R58PIC9nc_1024.jpg",
             "http://d.hiphotos.baidu.com/lvpics/w=1000/sign=65d18f97ae6eddc426e7b0fb09ebb7fd/8326cffc1e178a82d224ded2f503738da977e8ac.jpg"
     );
 

@@ -8,15 +8,11 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -28,6 +24,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.nanchen.compresshelper.CompressHelper;
+import com.wkz.share.adapter.RecyclerViewAdapter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -296,7 +293,7 @@ public class ScreenShotUtils {
      * https://gist.github.com/PrashamTrivedi/809d2541776c8c141d9a
      */
     public static Bitmap shotRecyclerView(RecyclerView recyclerView) {
-        RecyclerView.Adapter adapter = recyclerView.getAdapter();
+        RecyclerViewAdapter adapter = (RecyclerViewAdapter) recyclerView.getAdapter();
         Bitmap bigBitmap = null;
         if (adapter != null) {
             int size = adapter.getItemCount();
@@ -311,7 +308,7 @@ public class ScreenShotUtils {
             SparseIntArray bitmapTop = new SparseIntArray(size);
             for (int i = 0; i < size; i++) {
                 RecyclerView.ViewHolder holder = adapter.createViewHolder(recyclerView, adapter.getItemViewType(i));
-                adapter.onBindViewHolder(holder, i);
+                adapter.onBindViewSync(holder, i);
                 RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
                 holder.itemView.measure(
                         View.MeasureSpec.makeMeasureSpec(recyclerView.getWidth() - layoutParams.leftMargin - layoutParams.rightMargin, View.MeasureSpec.EXACTLY),
@@ -343,11 +340,6 @@ public class ScreenShotUtils {
                 ColorDrawable lColorDrawable = (ColorDrawable) lBackground;
                 int lColor = lColorDrawable.getColor();
                 bigCanvas.drawColor(lColor);
-            } else if (lBackground instanceof BitmapDrawable) {
-                BitmapDrawable lBitmapDrawable = (BitmapDrawable) lBackground;
-                Bitmap lBitmap = lBitmapDrawable.getBitmap();
-                bigCanvas.drawBitmap(lBitmap, new Rect(0, 0, lBitmap.getWidth(), lBitmap.getHeight()),
-                        new RectF(0, 0, recyclerView.getWidth(), recyclerView.getHeight()), paint);
             }
 
             for (int i = 0; i < size; i++) {
@@ -358,7 +350,7 @@ public class ScreenShotUtils {
         }
 
         // 保存图片
-        savePicture(recyclerView.getContext(), bigBitmap);
+//        savePicture(recyclerView.getContext(), bigBitmap);
 
         return bigBitmap;
     }
@@ -408,10 +400,10 @@ public class ScreenShotUtils {
      * @param context
      * @param bitmap
      */
-    private static void savePicture(final Context context, Bitmap bitmap) {
+    public static File savePicture(final Context context, Bitmap bitmap) {
 
         if (bitmap == null) {
-            return;
+            return null;
         }
 
         final File mFile;
@@ -471,6 +463,7 @@ public class ScreenShotUtils {
         Intent mIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri);
         context.sendBroadcast(mIntent);
 
+        return newFile;
     }
 
     /**
