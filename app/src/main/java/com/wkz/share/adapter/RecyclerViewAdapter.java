@@ -168,7 +168,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                     gameImageBitmap = BitmapFactory.decodeFile(gameImageFile.getAbsolutePath());
                 } else {
                     File gameImageFile = Glide.with(mContext)
-                            .load(R.mipmap.pic_image)
+                            .load(mDatas.get(2))
                             .downloadOnly(0,0)
                             .get();
                     gameImageBitmap = BitmapFactory.decodeFile(gameImageFile.getAbsolutePath());
