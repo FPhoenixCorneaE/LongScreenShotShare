@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.wkz.share.R;
+import com.wkz.share.utils.AnimationUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -67,5 +68,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             default:
                 break;
         }
+    }
+
+    /**
+     * 缩小
+     *
+     * @param targetView 目标视图
+     */
+    protected void zoomIn(View targetView) {
+        AnimationUtils.zoomIn(targetView, ZOOM_BEFORE, ZOOM_BEFORE, ZOOM_AFTER, ZOOM_AFTER, DURATION);
+    }
+
+    /**
+     * 放大
+     *
+     * @param targetView 目标视图
+     */
+    protected void zoomOut(View targetView) {
+        AnimationUtils.zoomOut(targetView, ZOOM_AFTER, ZOOM_AFTER, ZOOM_BEFORE, ZOOM_BEFORE, DURATION);
     }
 }

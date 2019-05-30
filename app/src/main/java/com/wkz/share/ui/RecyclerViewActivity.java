@@ -20,7 +20,6 @@ import com.wkz.share.immersionbar.ImmersionBar;
 import com.wkz.share.share.OnShareListener;
 import com.wkz.share.share.ShareDialog;
 import com.wkz.share.share.SharePlatformAdapter;
-import com.wkz.share.utils.AnimationUtils;
 import com.wkz.share.utils.ScreenShotUtils;
 
 import java.io.File;
@@ -97,7 +96,7 @@ public class RecyclerViewActivity extends MainActivity {
                     if (!mShareDialog.isShowing()) {
                         mShareDialog.show();
                     }
-                    zoomOut();
+                    zoomOut(mRvRecycler);
                     return true;
                 }
 
@@ -134,12 +133,12 @@ public class RecyclerViewActivity extends MainActivity {
 
                     @Override
                     public void onTouchOutSide(ShareDialog shareDialog) {
-                        zoomIn();
+                        zoomIn(mRvRecycler);
                     }
 
                     @Override
                     public void onDismiss(ShareDialog shareDialog) {
-                        zoomIn();
+                        zoomIn(mRvRecycler);
                     }
 
                     @Override
@@ -178,20 +177,6 @@ public class RecyclerViewActivity extends MainActivity {
         mRvRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRvRecycler.setHasFixedSize(true);
         mRvRecycler.setAdapter(new RecyclerViewAdapter(mContext, mDatas, mCenterImageUrl, mDownloadUrl, mVertexColor));
-    }
-
-    /**
-     * 缩小
-     */
-    private void zoomIn() {
-        AnimationUtils.zoomIn(mRvRecycler, ZOOM_BEFORE, ZOOM_BEFORE, ZOOM_AFTER, ZOOM_AFTER, DURATION);
-    }
-
-    /**
-     * 放大
-     */
-    private void zoomOut() {
-        AnimationUtils.zoomOut(mRvRecycler, ZOOM_AFTER, ZOOM_AFTER, ZOOM_BEFORE, ZOOM_BEFORE, DURATION);
     }
 
     @Override

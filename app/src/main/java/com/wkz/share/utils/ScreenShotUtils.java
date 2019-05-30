@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Picture;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -46,7 +47,6 @@ import java.util.Locale;
 public class ScreenShotUtils {
 
     private static final String FILE_DIR = "LongScreenShot";
-
 
     /**
      * 截图Activity
@@ -139,6 +139,22 @@ public class ScreenShotUtils {
     }
 
     /**
+     * 截图View,只能截当前屏幕可见区域
+     *
+     * @param view
+     * @return
+     */
+    public static Bitmap shotViewInScreen(View view) {
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        view.draw(canvas);
+
+        // 保存图片
+        savePicture(view.getContext(), bitmap);
+        return bitmap;
+    }
+
+    /**
      * 截图NestedScrollView
      * http://blog.csdn.net/lyy1104/article/details/40048329
      **/
@@ -146,21 +162,24 @@ public class ScreenShotUtils {
         if (nestedScrollView == null) {
             return null;
         }
-        int h = 0;
-        Bitmap bitmap;
-        // 获取ScrollView实际高度
-        for (int i = 0; i < nestedScrollView.getChildCount(); i++) {
-            h += nestedScrollView.getChildAt(i).getHeight();
+        try {
+            int h = 0;
+            // 获取ScrollView实际高度
+            for (int i = 0; i < nestedScrollView.getChildCount(); i++) {
+                h += nestedScrollView.getChildAt(i).getHeight();
+            }
+            // 创建对应大小的bitmap
+            Bitmap bitmap = Bitmap.createBitmap(nestedScrollView.getWidth(), h, Bitmap.Config.ARGB_8888);
+            final Canvas canvas = new Canvas(bitmap);
+            nestedScrollView.draw(canvas);
+
+            // 保存图片
+            savePicture(nestedScrollView.getContext(), bitmap);
+
+            return bitmap;
+        } catch (OutOfMemoryError oom) {
+            return null;
         }
-        // 创建对应大小的bitmap
-        bitmap = Bitmap.createBitmap(nestedScrollView.getWidth(), h, Bitmap.Config.ARGB_8888);
-        final Canvas canvas = new Canvas(bitmap);
-        nestedScrollView.draw(canvas);
-
-        // 保存图片
-        savePicture(nestedScrollView.getContext(), bitmap);
-
-        return bitmap;
     }
 
     /**
@@ -246,46 +265,53 @@ public class ScreenShotUtils {
      * http://stackoverflow.com/questions/12742343/android-get-screenshot-of-all-listview-items
      */
     public static Bitmap shotListView(ListView listView) {
-
-        ListAdapter adapter = listView.getAdapter();
-        int itemCount = adapter.getCount();
-        int allItemsHeight = 0;
-        List<Bitmap> bmps = new ArrayList<>();
-
-        for (int i = 0; i < itemCount; i++) {
-
-            View childView = adapter.getView(i, null, listView);
-            childView.measure(
-                    View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.EXACTLY),
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-
-            childView.layout(0, 0, childView.getMeasuredWidth(), childView.getMeasuredHeight());
-            childView.setDrawingCacheEnabled(true);
-            childView.buildDrawingCache();
-            bmps.add(childView.getDrawingCache());
-            allItemsHeight += childView.getMeasuredHeight();
+        if (listView == null) {
+            return null;
         }
 
-        Bitmap bigBitmap =
-                Bitmap.createBitmap(listView.getMeasuredWidth(), allItemsHeight, Bitmap.Config.ARGB_8888);
-        Canvas bigCanvas = new Canvas(bigBitmap);
+        try {
+            ListAdapter adapter = listView.getAdapter();
+            int itemCount = adapter.getCount();
+            int allItemsHeight = 0;
+            List<Bitmap> bmps = new ArrayList<>();
 
-        Paint paint = new Paint();
-        int iHeight = 0;
+            for (int i = 0; i < itemCount; i++) {
 
-        for (int i = 0; i < bmps.size(); i++) {
-            Bitmap bmp = bmps.get(i);
-            bigCanvas.drawBitmap(bmp, 0, iHeight, paint);
-            iHeight += bmp.getHeight();
+                View childView = adapter.getView(i, null, listView);
+                childView.measure(
+                        View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
 
-            bmp.recycle();
-            bmp = null;
+                childView.layout(0, 0, childView.getMeasuredWidth(), childView.getMeasuredHeight());
+                childView.setDrawingCacheEnabled(true);
+                childView.buildDrawingCache();
+                bmps.add(childView.getDrawingCache());
+                allItemsHeight += childView.getMeasuredHeight();
+            }
+
+            Bitmap bigBitmap =
+                    Bitmap.createBitmap(listView.getMeasuredWidth(), allItemsHeight, Bitmap.Config.ARGB_8888);
+            Canvas bigCanvas = new Canvas(bigBitmap);
+
+            Paint paint = new Paint();
+            int iHeight = 0;
+
+            for (int i = 0; i < bmps.size(); i++) {
+                Bitmap bmp = bmps.get(i);
+                bigCanvas.drawBitmap(bmp, 0, iHeight, paint);
+                iHeight += bmp.getHeight();
+
+                bmp.recycle();
+                bmp = null;
+            }
+
+            // 保存图片
+            savePicture(listView.getContext(), bigBitmap);
+
+            return bigBitmap;
+        } catch (OutOfMemoryError oom) {
+            return null;
         }
-
-        // 保存图片
-        savePicture(listView.getContext(), bigBitmap);
-
-        return bigBitmap;
     }
 
     /**
@@ -293,105 +319,108 @@ public class ScreenShotUtils {
      * https://gist.github.com/PrashamTrivedi/809d2541776c8c141d9a
      */
     public static Bitmap shotRecyclerView(RecyclerView recyclerView) {
-        RecyclerViewAdapter adapter = (RecyclerViewAdapter) recyclerView.getAdapter();
-        Bitmap bigBitmap = null;
-        if (adapter != null) {
-            int size = adapter.getItemCount();
-            int height = 0;
-            Paint paint = new Paint();
-            final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        if (recyclerView == null) {
+            return null;
+        }
+        try {
+            RecyclerViewAdapter adapter = (RecyclerViewAdapter) recyclerView.getAdapter();
+            Bitmap bigBitmap = null;
+            if (adapter != null) {
+                int size = adapter.getItemCount();
+                int height = 0;
+                Paint paint = new Paint();
+                final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 
-            // Use 1/8th of the available memory for this memory cache.
-            final int cacheSize = maxMemory / 8;
-            LruCache<String, Bitmap> bitmapCache = new LruCache<>(cacheSize);
-            SparseIntArray bitmapLeft = new SparseIntArray(size);
-            SparseIntArray bitmapTop = new SparseIntArray(size);
-            for (int i = 0; i < size; i++) {
-                RecyclerView.ViewHolder holder = adapter.createViewHolder(recyclerView, adapter.getItemViewType(i));
-                adapter.onBindViewSync(holder, i);
-                RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
-                holder.itemView.measure(
-                        View.MeasureSpec.makeMeasureSpec(recyclerView.getWidth() - layoutParams.leftMargin - layoutParams.rightMargin, View.MeasureSpec.EXACTLY),
-                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-                );
-                holder.itemView.layout(
-                        layoutParams.leftMargin,
-                        layoutParams.topMargin,
-                        holder.itemView.getMeasuredWidth() + layoutParams.leftMargin,
-                        holder.itemView.getMeasuredHeight() + layoutParams.topMargin
-                );
-                holder.itemView.setDrawingCacheEnabled(true);
-                holder.itemView.buildDrawingCache();
-                Bitmap drawingCache = holder.itemView.getDrawingCache();
-                if (drawingCache != null) {
-                    bitmapCache.put(String.valueOf(i), drawingCache);
+                // Use 1/8th of the available memory for this memory cache.
+                final int cacheSize = maxMemory / 8;
+                LruCache<String, Bitmap> bitmapCache = new LruCache<>(cacheSize);
+                SparseIntArray bitmapLeft = new SparseIntArray(size);
+                SparseIntArray bitmapTop = new SparseIntArray(size);
+                for (int i = 0; i < size; i++) {
+                    RecyclerView.ViewHolder holder = adapter.createViewHolder(recyclerView, adapter.getItemViewType(i));
+                    adapter.onBindViewSync(holder, i);
+                    RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
+                    holder.itemView.measure(
+                            View.MeasureSpec.makeMeasureSpec(recyclerView.getWidth() - layoutParams.leftMargin - layoutParams.rightMargin, View.MeasureSpec.EXACTLY),
+                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                    );
+                    holder.itemView.layout(
+                            layoutParams.leftMargin,
+                            layoutParams.topMargin,
+                            holder.itemView.getMeasuredWidth() + layoutParams.leftMargin,
+                            holder.itemView.getMeasuredHeight() + layoutParams.topMargin
+                    );
+                    holder.itemView.setDrawingCacheEnabled(true);
+                    holder.itemView.buildDrawingCache();
+                    Bitmap drawingCache = holder.itemView.getDrawingCache();
+                    if (drawingCache != null) {
+                        bitmapCache.put(String.valueOf(i), drawingCache);
+                    }
+
+                    height += layoutParams.topMargin;
+                    bitmapLeft.put(i, layoutParams.leftMargin);
+                    bitmapTop.put(i, height);
+                    height += holder.itemView.getMeasuredHeight() + layoutParams.bottomMargin;
                 }
 
-                height += layoutParams.topMargin;
-                bitmapLeft.put(i, layoutParams.leftMargin);
-                bitmapTop.put(i, height);
-                height += holder.itemView.getMeasuredHeight() + layoutParams.bottomMargin;
-            }
+                bigBitmap = Bitmap.createBitmap(recyclerView.getMeasuredWidth(), height, Bitmap.Config.ARGB_8888);
+                Canvas bigCanvas = new Canvas(bigBitmap);
+                Drawable lBackground = recyclerView.getBackground();
+                if (lBackground instanceof ColorDrawable) {
+                    ColorDrawable lColorDrawable = (ColorDrawable) lBackground;
+                    int lColor = lColorDrawable.getColor();
+                    bigCanvas.drawColor(lColor);
+                }
 
-            bigBitmap = Bitmap.createBitmap(recyclerView.getMeasuredWidth(), height, Bitmap.Config.ARGB_8888);
-            Canvas bigCanvas = new Canvas(bigBitmap);
-            Drawable lBackground = recyclerView.getBackground();
-            if (lBackground instanceof ColorDrawable) {
-                ColorDrawable lColorDrawable = (ColorDrawable) lBackground;
-                int lColor = lColorDrawable.getColor();
-                bigCanvas.drawColor(lColor);
+                for (int i = 0; i < size; i++) {
+                    Bitmap bitmap = bitmapCache.get(String.valueOf(i));
+                    bigCanvas.drawBitmap(bitmap, bitmapLeft.get(i), bitmapTop.get(i), paint);
+                    bitmap.recycle();
+                }
             }
-
-            for (int i = 0; i < size; i++) {
-                Bitmap bitmap = bitmapCache.get(String.valueOf(i));
-                bigCanvas.drawBitmap(bitmap, bitmapLeft.get(i), bitmapTop.get(i), paint);
-                bitmap.recycle();
-            }
+            return bigBitmap;
+        } catch (OutOfMemoryError oom) {
+            return null;
         }
-
-        // 保存图片
-//        savePicture(recyclerView.getContext(), bigBitmap);
-
-        return bigBitmap;
     }
 
     /**
-     * 截图WebView
+     * 截图WebView，没有使用X5内核
      *
      * @param webView
-     */
-    private Bitmap shotWebView(WebView webView) {
-        webView.measure(View.MeasureSpec.makeMeasureSpec(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        webView.layout(0, 0, webView.getMeasuredWidth(), webView.getMeasuredHeight());
-        webView.setDrawingCacheEnabled(true);
-        webView.buildDrawingCache();
-        Bitmap bitmap = Bitmap.createBitmap(webView.getMeasuredWidth(), webView.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-        Canvas bigCanvas = new Canvas(bitmap);
-        Paint paint = new Paint();
-        int iHeight = bitmap.getHeight();
-        bigCanvas.drawBitmap(bitmap, 0, iHeight, paint);
-        webView.draw(bigCanvas);
-
-        // 保存图片
-        savePicture(webView.getContext(), bitmap);
-        return bitmap;
-    }
-
-    /**
-     * 截图View
-     *
-     * @param view
      * @return
      */
-    public static Bitmap getBitmapByView(View view) {
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
+    public static Bitmap shotWebView(WebView webView) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                float scale = webView.getScale();
+                int width = webView.getWidth();
+                int height = (int) (webView.getContentHeight() * scale + 0.5);
+                Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                webView.draw(canvas);
 
-        // 保存图片
-        savePicture(view.getContext(), bitmap);
-        return bitmap;
+                // 保存图片
+                savePicture(webView.getContext(), bitmap);
+                return bitmap;
+            } else {
+                Picture picture = webView.capturePicture();
+                int width = picture.getWidth();
+                int height = picture.getHeight();
+                if (width > 0 && height > 0) {
+                    Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                    Canvas canvas = new Canvas(bitmap);
+                    picture.draw(canvas);
+
+                    // 保存图片
+                    savePicture(webView.getContext(), bitmap);
+                    return bitmap;
+                }
+                return null;
+            }
+        } catch (OutOfMemoryError oom) {
+            return null;
+        }
     }
 
     /**

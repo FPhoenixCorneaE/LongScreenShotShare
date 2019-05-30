@@ -31,7 +31,6 @@ import com.wkz.share.immersionbar.ImmersionBar;
 import com.wkz.share.share.OnShareListener;
 import com.wkz.share.share.ShareDialog;
 import com.wkz.share.share.SharePlatformAdapter;
-import com.wkz.share.utils.AnimationUtils;
 import com.wkz.share.utils.ScreenShotUtils;
 import com.wkz.share.zxing.QRCode;
 
@@ -82,39 +81,12 @@ public class ScrollViewActivity extends MainActivity implements View.OnClickList
 
         initView();
 
-        //隐藏状态栏
-        ImmersionBar.with(this)
-                .fitsSystemWindows(false)
-                .statusBarDarkFont(false)
-                .hideBar(BarHide.FLAG_HIDE_NAVIGATION_BAR)
-                .init();
+        // 初始化状态栏
+        initStatusBar();
 
-        //分享弹窗
-        mShareDialog = new ShareDialog(this)
-                .setShareTitle("图片分享到")
-                .setOnShareListener(new OnShareListener() {
-                    @Override
-                    public void onClickCloseBtn(ShareDialog shareDialog) {
-                        finish();
-                    }
+        // 初始化分享弹窗
+        initShareDialog();
 
-                    @Override
-                    public void onTouchOutSide(ShareDialog shareDialog) {
-                        zoomIn();
-                    }
-
-                    @Override
-                    public void onDismiss(ShareDialog shareDialog) {
-
-                    }
-
-                    @Override
-                    public void onClickSharePlatform(ShareDialog shareDialog, SharePlatformAdapter.ViewHolder holder, int sharePlatform) {
-                        //长截图
-                        Bitmap bitmap = ScreenShotUtils.shotNestedScrollView(mScrollNsv);
-                    }
-                });
-        mShareDialog.show();
     }
 
     private void initView() {
@@ -131,7 +103,7 @@ public class ScrollViewActivity extends MainActivity implements View.OnClickList
         mQrCodeIv.setOnLongClickListener(this);
         mChildLl = (LinearLayout) findViewById(R.id.ll_child);
 
-        //背景图片
+        // 背景图片
         Glide.with(this)
                 .load(R.mipmap.pic_image)
                 .apply(new RequestOptions().transform(new GlideBlurTransformation(this)))
@@ -142,7 +114,7 @@ public class ScrollViewActivity extends MainActivity implements View.OnClickList
                     }
                 });
 
-        //二维码中心图片
+        // 二维码中心图片
         Glide.with(mContext)
                 .asBitmap()
                 .load(R.mipmap.ic_game_icon)
@@ -153,6 +125,44 @@ public class ScrollViewActivity extends MainActivity implements View.OnClickList
                     }
                 });
 
+    }
+
+    private void initStatusBar() {
+        // 隐藏状态栏
+        ImmersionBar.with(this)
+                .fitsSystemWindows(false)
+                .statusBarDarkFont(false)
+                .hideBar(BarHide.FLAG_HIDE_NAVIGATION_BAR)
+                .init();
+    }
+
+    private void initShareDialog() {
+        // 分享弹窗
+        mShareDialog = new ShareDialog(this)
+                .setShareTitle("图片分享到")
+                .setOnShareListener(new OnShareListener() {
+                    @Override
+                    public void onClickCloseBtn(ShareDialog shareDialog) {
+                        finish();
+                    }
+
+                    @Override
+                    public void onTouchOutSide(ShareDialog shareDialog) {
+                        zoomIn(mGameInfoRl);
+                    }
+
+                    @Override
+                    public void onDismiss(ShareDialog shareDialog) {
+
+                    }
+
+                    @Override
+                    public void onClickSharePlatform(ShareDialog shareDialog, SharePlatformAdapter.ViewHolder holder, int sharePlatform) {
+                        // 长截图
+                        Bitmap bitmap = ScreenShotUtils.shotNestedScrollView(mScrollNsv);
+                    }
+                });
+        mShareDialog.show();
     }
 
     public static Bitmap drawableToBitmap(Drawable drawable) {
@@ -175,42 +185,28 @@ public class ScrollViewActivity extends MainActivity implements View.OnClickList
                 if (!mShareDialog.isShowing()) {
                     mShareDialog.show();
                 }
-                zoomOut();
+                zoomOut(mGameInfoRl);
                 break;
             case R.id.iv_game_icon:
                 if (!mShareDialog.isShowing()) {
                     mShareDialog.show();
                 }
-                zoomOut();
+                zoomOut(mGameInfoRl);
                 break;
             case R.id.rl_game_info:
                 if (!mShareDialog.isShowing()) {
                     mShareDialog.show();
                 }
-                zoomOut();
+                zoomOut(mGameInfoRl);
                 break;
             default:
                 break;
         }
     }
 
-    /**
-     * 缩小
-     */
-    private void zoomIn() {
-        AnimationUtils.zoomIn(mGameInfoRl, ZOOM_BEFORE, ZOOM_BEFORE, ZOOM_AFTER, ZOOM_AFTER, DURATION);
-    }
-
-    /**
-     * 放大
-     */
-    private void zoomOut() {
-        AnimationUtils.zoomOut(mGameInfoRl, ZOOM_AFTER, ZOOM_AFTER, ZOOM_BEFORE, ZOOM_BEFORE, DURATION);
-    }
-
     @Override
     public boolean onLongClick(View v) {
-        //打开浏览器下载游戏
+        // 打开浏览器下载游戏
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(mDownloadUrl));
