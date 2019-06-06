@@ -49,11 +49,11 @@
                     android:layout_marginBottom="15dp"
                     android:layout_marginLeft="15dp"
                     android:layout_marginTop="-25dp"
-                    android:background="@mipmap/ic_game_icon"
                     android:scaleType="centerCrop"
+                    android:src="@mipmap/ic_game_icon"
                     app:siv_pressed_alpha="0"
                     app:siv_pressed_color="@android:color/transparent"
-                    app:siv_radius="5dp"
+                    app:siv_radius="10dp"
                     app:siv_shape_type="rectangle"
                     tools:ignore="RtlHardcoded" />
 
@@ -67,7 +67,7 @@
                     android:ellipsize="end"
                     android:gravity="fill_horizontal"
                     android:maxLines="1"
-                    android:text="三生三世十里桃花"
+                    android:text="《蜀道难》《赤壁赋》《琵琶行》"
                     android:textColor="#ff000000"
                     android:textSize="14sp"
                     tools:ignore="HardcodedText,RtlHardcoded" />
@@ -121,7 +121,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="下载游戏"
+                            android:text="打开网页"
                             android:textColor="#ff505050"
                             android:textSize="12sp"
                             tools:ignore="HardcodedText" />

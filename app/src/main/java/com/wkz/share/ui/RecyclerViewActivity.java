@@ -55,9 +55,9 @@ public class RecyclerViewActivity extends MainActivity {
     @ColorInt
     private int mVertexColor = Color.parseColor("#ff000000");
     /**
-     * 下载游戏地址
+     * 扫描二维码打开百度
      */
-    private String mDownloadUrl = "http://files.rastargame.com/andriodapk/RSClient.apk";
+    private String mUrl = "https://www.baidu.com";
     /**
      * 分享弹窗
      */
@@ -176,7 +176,7 @@ public class RecyclerViewActivity extends MainActivity {
     private void initRecyclerView() {
         mRvRecycler.setLayoutManager(new LinearLayoutManager(this));
         mRvRecycler.setHasFixedSize(true);
-        mRvRecycler.setAdapter(new RecyclerViewAdapter(mContext, mDatas, mCenterImageUrl, mDownloadUrl, mVertexColor));
+        mRvRecycler.setAdapter(new RecyclerViewAdapter(mContext, mDatas, mCenterImageUrl, mUrl, mVertexColor));
     }
 
     @Override

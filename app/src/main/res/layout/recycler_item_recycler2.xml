@@ -4,7 +4,7 @@
     android:id="@+id/rl_qr_code"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/shape_bg_0xffededed_cornersfive">
+    android:background="@drawable/shape_bg_0xffededed_cornersfive_bottom">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -40,7 +40,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="下载游戏"
+                android:text="打开网页"
                 android:textColor="#ff505050"
                 android:textSize="12sp"
                 tools:ignore="HardcodedText" />

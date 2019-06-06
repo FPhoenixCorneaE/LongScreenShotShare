@@ -63,9 +63,9 @@ public class ScrollViewActivity extends MainActivity implements View.OnClickList
     @ColorInt
     private int mVertexColor = Color.parseColor("#ff000000");
     /**
-     * 下载游戏地址
+     * 扫描二维码打开百度
      */
-    private String mDownloadUrl = "http://files.rastargame.com/andriodapk/RSClient.apk";
+    private String mUrl = "https://www.baidu.com";
     /**
      * 分享弹窗
      */
@@ -117,11 +117,11 @@ public class ScrollViewActivity extends MainActivity implements View.OnClickList
         // 二维码中心图片
         Glide.with(mContext)
                 .asBitmap()
-                .load(R.mipmap.ic_game_icon)
+                .load(mCenterImageUrl)
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                        mQrCodeIv.setImageBitmap(QRCode.createQRCodeWithLogo6(mDownloadUrl, 500, resource, mVertexColor));
+                        mQrCodeIv.setImageBitmap(QRCode.createQRCodeWithLogo6(mUrl, 500, resource, mVertexColor));
                     }
                 });
 
@@ -206,10 +206,10 @@ public class ScrollViewActivity extends MainActivity implements View.OnClickList
 
     @Override
     public boolean onLongClick(View v) {
-        // 打开浏览器下载游戏
+        // 打开浏览器
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(mDownloadUrl));
+        intent.setData(Uri.parse(mUrl));
         mContext.startActivity(intent);
         return false;
     }

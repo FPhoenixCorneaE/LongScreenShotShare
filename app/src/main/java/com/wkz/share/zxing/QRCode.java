@@ -290,7 +290,7 @@ public class QRCode {
      */
     public static Bitmap createQRCodeWithLogo6(String text, int size, Bitmap mBitmap, @ColorInt int vertexColor) {
         try {
-            IMAGE_HALFWIDTH = size / 10;
+            IMAGE_HALFWIDTH = size / 5;
             Hashtable<EncodeHintType, Object> hints = new Hashtable<>();
             hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
             //去掉白边

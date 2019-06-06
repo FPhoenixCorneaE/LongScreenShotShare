@@ -37,14 +37,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
     private Context mContext;
     private List<String> mDatas;
     private String mCenterImageUrl;
-    private String mDownloadUrl;
+    private String mUrl;
     private int mVertexColor;
 
-    public RecyclerViewAdapter(Context mContext, List<String> mDatas, String mCenterImageUrl, String mDownloadUrl, int mVertexColor) {
+    public RecyclerViewAdapter(Context mContext, List<String> mDatas, String mCenterImageUrl, String mUrl, int mVertexColor) {
         this.mContext = mContext;
         this.mDatas = mDatas;
         this.mCenterImageUrl = mCenterImageUrl;
-        this.mDownloadUrl = mDownloadUrl;
+        this.mUrl = mUrl;
         this.mVertexColor = mVertexColor;
     }
 
@@ -65,9 +65,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         if (position == 0) {
             //设置margin
             ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_game_info), true, 25, 100, 25, 0);
+            holder.itemView.findViewById(R.id.rl_game_info).setBackgroundResource(R.drawable.shape_bg_0xffededed_cornersfive);
             ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).load(mDatas.get(position), new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL));
             ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_icon)).load(mCenterImageUrl, new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL));
-            ((TextView) holder.itemView.findViewById(R.id.tv_game_name)).setText(String.format(Locale.getDefault(), "三生三世十里桃花%d", position));
+            ((TextView) holder.itemView.findViewById(R.id.tv_game_name)).setText(String.format(Locale.getDefault(), "《长恨歌》白居易%d", position));
         } else if (position == getItemCount() - 1) {
             //设置margin
             ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_qr_code), true, 25, 0, 25, 150);
@@ -81,7 +82,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                         @Override
                         public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
                             ((ImageView) holder.itemView.findViewById(R.id.iv_qr_code))
-                                    .setImageBitmap(QRCode.createQRCodeWithLogo6(mDownloadUrl, 500, resource, mVertexColor));
+                                    .setImageBitmap(QRCode.createQRCodeWithLogo6(mUrl, 500, resource, mVertexColor));
                         }
                     });
 
@@ -91,7 +92,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                     //打开浏览器下载游戏
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(mDownloadUrl));
+                    intent.setData(Uri.parse(mUrl));
                     mContext.startActivity(intent);
                     return false;
                 }
@@ -99,9 +100,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         } else {
             //设置margin
             ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_game_info), true, 25, 15, 25, 0);
+            if (position == getItemCount() - 2) {
+                holder.itemView.findViewById(R.id.rl_game_info).setBackgroundResource(R.drawable.shape_bg_0xffededed_cornersfive_top);
+            } else {
+                holder.itemView.findViewById(R.id.rl_game_info).setBackgroundResource(R.drawable.shape_bg_0xffededed_cornersfive);
+            }
             ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).load(mDatas.get(position), new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL));
             ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_icon)).load(mCenterImageUrl, new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL));
-            ((TextView) holder.itemView.findViewById(R.id.tv_game_name)).setText(String.format(Locale.getDefault(), "三生三世十里桃花%d", position));
+            ((TextView) holder.itemView.findViewById(R.id.tv_game_name)).setText(String.format(Locale.getDefault(), "《长恨歌》白居易%d", position));
         }
     }
 
@@ -110,6 +116,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             if (position == 0) {
                 //设置margin
                 ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_game_info), true, 25, 100, 25, 0);
+                holder.itemView.findViewById(R.id.rl_game_info).setBackgroundResource(R.drawable.shape_bg_0xffededed_cornersfive);
+
                 File gameImageFile = Glide.with(mContext)
                         .load(mDatas.get(position))
                         .downloadOnly(0, 0)
@@ -124,7 +132,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
                 ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).setImageBitmap(gameImageBitmap);
                 ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_icon)).setImageBitmap(gameIconBitmap);
-                ((TextView) holder.itemView.findViewById(R.id.tv_game_name)).setText(String.format(Locale.getDefault(), "三生三世十里桃花%d", position));
+                ((TextView) holder.itemView.findViewById(R.id.tv_game_name)).setText(String.format(Locale.getDefault(), "《长恨歌》白居易%d", position));
             } else if (position == getItemCount() - 1) {
                 //设置margin
                 ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_qr_code), true, 25, 0, 25, 150);
@@ -137,15 +145,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 Bitmap centerImageBitmap = BitmapFactory.decodeFile(centerImageFile.getAbsolutePath());
 
                 ((ImageView) holder.itemView.findViewById(R.id.iv_qr_code))
-                        .setImageBitmap(QRCode.createQRCodeWithLogo6(mDownloadUrl, 500, centerImageBitmap, mVertexColor));
+                        .setImageBitmap(QRCode.createQRCodeWithLogo6(mUrl, 500, centerImageBitmap, mVertexColor));
 
                 holder.itemView.findViewById(R.id.iv_qr_code).setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        //打开浏览器下载游戏
+                        //打开浏览器
                         Intent intent = new Intent();
                         intent.setAction(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse(mDownloadUrl));
+                        intent.setData(Uri.parse(mUrl));
                         mContext.startActivity(intent);
                         return false;
                     }
@@ -153,6 +161,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
             } else {
                 //设置margin
                 ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_game_info), true, 25, 15, 25, 0);
+                if (position == getItemCount() - 2) {
+                    holder.itemView.findViewById(R.id.rl_game_info).setBackgroundResource(R.drawable.shape_bg_0xffededed_cornersfive_top);
+                } else {
+                    holder.itemView.findViewById(R.id.rl_game_info).setBackgroundResource(R.drawable.shape_bg_0xffededed_cornersfive);
+                }
 
                 File gameImageFile = Glide.with(mContext)
                         .load(mDatas.get(position))
@@ -168,7 +181,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
                 ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).setImageBitmap(gameImageBitmap);
                 ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_icon)).setImageBitmap(gameIconBitmap);
-                ((TextView) holder.itemView.findViewById(R.id.tv_game_name)).setText(String.format(Locale.getDefault(), "三生三世十里桃花%d", position));
+                ((TextView) holder.itemView.findViewById(R.id.tv_game_name)).setText(String.format(Locale.getDefault(), "《长恨歌》白居易%d", position));
             }
         } catch (ExecutionException e) {
             e.printStackTrace();

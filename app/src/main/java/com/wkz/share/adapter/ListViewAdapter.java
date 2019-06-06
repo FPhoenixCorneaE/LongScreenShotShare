@@ -90,7 +90,7 @@ public class ListViewAdapter extends BaseAdapter {
 
         holder.mIvGameImage.load(mDatas.get(position), new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL));
         holder.mIvGameIcon.load(mDatas.get(position), new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL));
-        holder.mTvGameName.setText(String.format(Locale.getDefault(), "三生三世十里桃花%d", position));
+        holder.mTvGameName.setText(String.format(Locale.getDefault(), "《将进酒》李白%d", position));
 
         holder.mIvGameImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,7 +147,7 @@ public class ListViewAdapter extends BaseAdapter {
 
             holder.mIvGameImage.setImageBitmap(gameImageBitmap);
             holder.mIvGameIcon.setImageBitmap(gameIconBitmap);
-            holder.mTvGameName.setText(String.format(Locale.getDefault(), "三生三世十里桃花%d", position));
+            holder.mTvGameName.setText(String.format(Locale.getDefault(), "《将进酒》李白%d", position));
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {

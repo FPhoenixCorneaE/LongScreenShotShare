@@ -26,11 +26,11 @@
         android:layout_marginLeft="15dp"
         android:layout_marginTop="-25dp"
         android:layout_marginBottom="15dp"
-        android:background="@mipmap/ic_game_icon"
         android:scaleType="centerCrop"
+        android:src="@mipmap/ic_game_icon"
         app:siv_pressed_alpha="0"
         app:siv_pressed_color="@android:color/transparent"
-        app:siv_radius="5dp"
+        app:siv_radius="10dp"
         app:siv_shape_type="rectangle"
         tools:ignore="RtlHardcoded" />
 
@@ -44,7 +44,7 @@
         android:ellipsize="end"
         android:gravity="fill_horizontal"
         android:maxLines="1"
-        android:text="三生三世十里桃花"
+        android:text="《长恨歌》白居易"
         android:textColor="#ff000000"
         android:textSize="14sp"
         tools:ignore="HardcodedText,RtlHardcoded" />
@@ -59,7 +59,14 @@
         android:layout_marginBottom="15dp"
         android:gravity="fill_horizontal"
         android:lineSpacingMultiplier="1.2"
-        android:text="《苍之纪元》是一款以异世界冒险为题材的休闲游戏。这款游戏以说！"
+        android:text="汉皇重色思倾国，御宇多年求不得。
+杨家有女初长成，养在深闺人未识。
+天生丽质难自弃，一朝选在君王侧。
+回眸一笑百媚生，六宫粉黛无颜色。
+春寒赐浴华清池，温泉水滑洗凝脂。
+侍儿扶起娇无力，始是新承恩泽时。
+云鬓花颜金步摇，芙蓉帐暖度春宵。
+春宵苦短日高起，从此君王不早朝。"
         android:textColor="#ff505050"
         android:textSize="13sp"
         tools:ignore="HardcodedText" />
