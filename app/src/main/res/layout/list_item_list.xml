@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/rl_game_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_bg_0xffededed_cornersfive"
+        tools:ignore="UselessParent">
+
+        <com.sunfusheng.glideimageview.GlideImageView
+            android:id="@+id/iv_game_image"
+            android:layout_width="match_parent"
+            android:layout_height="185dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/pic_image"
+            app:siv_pressed_alpha="0"
+            app:siv_radius_top_left="5dp"
+            app:siv_radius_top_right="5dp"
+            app:siv_shape_type="rectangle" />
+
+        <com.sunfusheng.glideimageview.GlideImageView
+            android:id="@+id/iv_game_icon"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:layout_below="@+id/iv_game_image"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="-25dp"
+            android:layout_marginBottom="15dp"
+            android:background="@mipmap/ic_game_icon"
+            android:scaleType="centerCrop"
+            app:siv_pressed_alpha="0"
+            app:siv_pressed_color="@android:color/transparent"
+            app:siv_radius="5dp"
+            app:siv_shape_type="rectangle"
+            tools:ignore="RtlHardcoded" />
+
+        <TextView
+            android:id="@+id/tv_game_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/iv_game_icon"
+            android:layout_marginLeft="15dp"
+            android:layout_toRightOf="@id/iv_game_icon"
+            android:ellipsize="end"
+            android:gravity="fill_horizontal"
+            android:maxLines="1"
+            android:text="三生三世十里桃花"
+            android:textColor="#ff000000"
+            android:textSize="14sp"
+            tools:ignore="HardcodedText,RtlHardcoded" />
+
+        <TextView
+            android:id="@+id/tv_game_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iv_game_icon"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="15dp"
+            android:gravity="fill_horizontal"
+            android:lineSpacingMultiplier="1.2"
+            android:text="《苍之纪元》是一款以异世界冒险为题材的休闲游戏。这款游戏以说！"
+            android:textColor="#ff505050"
+            android:textSize="13sp"
+            tools:ignore="HardcodedText" />
+    </RelativeLayout>
+</FrameLayout>

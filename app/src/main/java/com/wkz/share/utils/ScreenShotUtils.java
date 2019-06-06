@@ -21,10 +21,10 @@ import android.util.LruCache;
 import android.util.SparseIntArray;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.nanchen.compresshelper.CompressHelper;
+import com.wkz.share.adapter.ListViewAdapter;
 import com.wkz.share.adapter.RecyclerViewAdapter;
 
 import java.io.File;
@@ -33,8 +33,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -270,44 +268,57 @@ public class ScreenShotUtils {
         }
 
         try {
-            ListAdapter adapter = listView.getAdapter();
-            int itemCount = adapter.getCount();
-            int allItemsHeight = 0;
-            List<Bitmap> bmps = new ArrayList<>();
+            ListViewAdapter adapter = (ListViewAdapter) listView.getAdapter();
+            Bitmap bigBitmap = null;
+            if (adapter != null) {
+                int size = adapter.getCount();
+                int height = 0;
+                Paint paint = new Paint();
+                final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 
-            for (int i = 0; i < itemCount; i++) {
+                // Use 1/8th of the available memory for this memory cache.
+                final int cacheSize = maxMemory / 8;
+                LruCache<String, Bitmap> bitmapCache = new LruCache<>(cacheSize);
+                SparseIntArray bitmapTop = new SparseIntArray(size);
+                for (int i = 0; i < size; i++) {
+                    View childView = adapter.getConvertView(i, null, listView);
+                    adapter.onBindViewSync(i, childView, listView);
+                    childView.measure(
+                            View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.EXACTLY),
+                            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+                    );
+                    childView.layout(
+                            0,
+                            0,
+                            childView.getMeasuredWidth(),
+                            childView.getMeasuredHeight()
+                    );
+                    childView.setDrawingCacheEnabled(true);
+                    childView.buildDrawingCache();
+                    Bitmap drawingCache = childView.getDrawingCache();
+                    if (drawingCache != null) {
+                        bitmapCache.put(String.valueOf(i), drawingCache);
+                    }
 
-                View childView = adapter.getView(i, null, listView);
-                childView.measure(
-                        View.MeasureSpec.makeMeasureSpec(listView.getWidth(), View.MeasureSpec.EXACTLY),
-                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+                    bitmapTop.put(i, height);
+                    height += childView.getMeasuredHeight();
+                }
 
-                childView.layout(0, 0, childView.getMeasuredWidth(), childView.getMeasuredHeight());
-                childView.setDrawingCacheEnabled(true);
-                childView.buildDrawingCache();
-                bmps.add(childView.getDrawingCache());
-                allItemsHeight += childView.getMeasuredHeight();
+                bigBitmap = Bitmap.createBitmap(listView.getMeasuredWidth(), height, Bitmap.Config.ARGB_8888);
+                Canvas bigCanvas = new Canvas(bigBitmap);
+                Drawable lBackground = listView.getBackground();
+                if (lBackground instanceof ColorDrawable) {
+                    ColorDrawable lColorDrawable = (ColorDrawable) lBackground;
+                    int lColor = lColorDrawable.getColor();
+                    bigCanvas.drawColor(lColor);
+                }
+
+                for (int i = 0; i < size; i++) {
+                    Bitmap bitmap = bitmapCache.get(String.valueOf(i));
+                    bigCanvas.drawBitmap(bitmap, 0, bitmapTop.get(i), paint);
+                    bitmap.recycle();
+                }
             }
-
-            Bitmap bigBitmap =
-                    Bitmap.createBitmap(listView.getMeasuredWidth(), allItemsHeight, Bitmap.Config.ARGB_8888);
-            Canvas bigCanvas = new Canvas(bigBitmap);
-
-            Paint paint = new Paint();
-            int iHeight = 0;
-
-            for (int i = 0; i < bmps.size(); i++) {
-                Bitmap bmp = bmps.get(i);
-                bigCanvas.drawBitmap(bmp, 0, iHeight, paint);
-                iHeight += bmp.getHeight();
-
-                bmp.recycle();
-                bmp = null;
-            }
-
-            // 保存图片
-            savePicture(listView.getContext(), bigBitmap);
-
             return bigBitmap;
         } catch (OutOfMemoryError oom) {
             return null;
@@ -393,6 +404,7 @@ public class ScreenShotUtils {
     public static Bitmap shotWebView(WebView webView) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                // Android5.0以上
                 float scale = webView.getScale();
                 int width = webView.getWidth();
                 int height = (int) (webView.getContentHeight() * scale + 0.5);
@@ -404,6 +416,7 @@ public class ScreenShotUtils {
                 savePicture(webView.getContext(), bitmap);
                 return bitmap;
             } else {
+                // Android5.0以下
                 Picture picture = webView.capturePicture();
                 int width = picture.getWidth();
                 int height = picture.getHeight();

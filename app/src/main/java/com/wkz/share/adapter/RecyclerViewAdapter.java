@@ -65,7 +65,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         if (position == 0) {
             //设置margin
             ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_game_info), true, 25, 100, 25, 0);
-            ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).load(mDatas.get(0), new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL));
+            ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).load(mDatas.get(position), new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL));
             ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_icon)).load(mCenterImageUrl, new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL));
             ((TextView) holder.itemView.findViewById(R.id.tv_game_name)).setText(String.format(Locale.getDefault(), "三生三世十里桃花%d", position));
         } else if (position == getItemCount() - 1) {
@@ -99,12 +99,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
         } else {
             //设置margin
             ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_game_info), true, 25, 15, 25, 0);
-
-            if (position >= 10 && position < 10 + mDatas.size()) {
-                ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).load(mDatas.get(position - 10), new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL));
-            } else {
-                ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).load(mDatas.get(2), new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL));
-            }
+            ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).load(mDatas.get(position), new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL));
             ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_icon)).load(mCenterImageUrl, new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL));
             ((TextView) holder.itemView.findViewById(R.id.tv_game_name)).setText(String.format(Locale.getDefault(), "三生三世十里桃花%d", position));
         }
@@ -116,16 +111,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 //设置margin
                 ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_game_info), true, 25, 100, 25, 0);
                 File gameImageFile = Glide.with(mContext)
-                        .load(mDatas.get(0))
-                        .downloadOnly(0,0)
+                        .load(mDatas.get(position))
+                        .downloadOnly(0, 0)
                         .get();
-                final Bitmap gameImageBitmap = BitmapFactory.decodeFile(gameImageFile.getAbsolutePath());
+                Bitmap gameImageBitmap = BitmapFactory.decodeFile(gameImageFile.getAbsolutePath());
 
                 File gameIconFile = Glide.with(mContext)
                         .load(mCenterImageUrl)
-                        .downloadOnly(0,0)
+                        .downloadOnly(0, 0)
                         .get();
-                final Bitmap gameIconBitmap = BitmapFactory.decodeFile(gameIconFile.getAbsolutePath());
+                Bitmap gameIconBitmap = BitmapFactory.decodeFile(gameIconFile.getAbsolutePath());
 
                 ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).setImageBitmap(gameImageBitmap);
                 ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_icon)).setImageBitmap(gameIconBitmap);
@@ -137,9 +132,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 //二维码中心图片
                 File centerImageFile = Glide.with(mContext)
                         .load(mCenterImageUrl)
-                        .downloadOnly(0,0)
+                        .downloadOnly(0, 0)
                         .get();
-                final Bitmap centerImageBitmap = BitmapFactory.decodeFile(centerImageFile.getAbsolutePath());
+                Bitmap centerImageBitmap = BitmapFactory.decodeFile(centerImageFile.getAbsolutePath());
 
                 ((ImageView) holder.itemView.findViewById(R.id.iv_qr_code))
                         .setImageBitmap(QRCode.createQRCodeWithLogo6(mDownloadUrl, 500, centerImageBitmap, mVertexColor));
@@ -159,25 +154,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
                 //设置margin
                 ViewUtils.setViewMargin(holder.itemView.findViewById(R.id.rl_game_info), true, 25, 15, 25, 0);
 
-                final Bitmap gameImageBitmap;
-                if (position >= 10 && position < 10 + mDatas.size()) {
-                    File gameImageFile = Glide.with(mContext)
-                            .load(mDatas.get(position - 10))
-                            .downloadOnly(0,0)
-                            .get();
-                    gameImageBitmap = BitmapFactory.decodeFile(gameImageFile.getAbsolutePath());
-                } else {
-                    File gameImageFile = Glide.with(mContext)
-                            .load(mDatas.get(2))
-                            .downloadOnly(0,0)
-                            .get();
-                    gameImageBitmap = BitmapFactory.decodeFile(gameImageFile.getAbsolutePath());
-                }
+                File gameImageFile = Glide.with(mContext)
+                        .load(mDatas.get(position))
+                        .downloadOnly(0, 0)
+                        .get();
+                Bitmap gameImageBitmap = BitmapFactory.decodeFile(gameImageFile.getAbsolutePath());
+
                 File gameIconFile = Glide.with(mContext)
                         .load(mCenterImageUrl)
-                        .downloadOnly(0,0)
+                        .downloadOnly(0, 0)
                         .get();
-                final Bitmap gameIconBitmap = BitmapFactory.decodeFile(gameIconFile.getAbsolutePath());
+                Bitmap gameIconBitmap = BitmapFactory.decodeFile(gameIconFile.getAbsolutePath());
 
                 ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_image)).setImageBitmap(gameImageBitmap);
                 ((GlideImageView) holder.itemView.findViewById(R.id.iv_game_icon)).setImageBitmap(gameIconBitmap);
@@ -192,7 +179,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemCount() {
-        return 20;
+        return mDatas.size() + 1;
     }
 
     @Override
