@@ -9,3 +9,4 @@
 	<img src="https://github.com/FPhoenixCorneaE/LongScreenShotShare/blob/master/preview/shot_recyclerview.jpeg" width="200" align="top" style="margin-left:15px"/>
 	<img src="https://github.com/FPhoenixCorneaE/LongScreenShotShare/blob/master/preview/shot_webview.jpeg" width="200" align="top" style="margin-left:15px"/>
 </div>
+
